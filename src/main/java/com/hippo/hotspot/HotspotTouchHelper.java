@@ -52,7 +52,7 @@ public class HotspotTouchHelper implements View.OnTouchListener {
 
         if (event.getAction() == MotionEvent.ACTION_DOWN ||
                 event.getAction() == MotionEvent.ACTION_MOVE)
-            mOwner.setHotspot(x, y);
+            setHotspot(v, x, y);
 
         if (!v.isEnabled()) {
             if (event.getAction() == MotionEvent.ACTION_UP && v.isPressed()) {
@@ -146,7 +146,7 @@ public class HotspotTouchHelper implements View.OnTouchListener {
                     break;
 
                 case MotionEvent.ACTION_MOVE:
-                    mOwner.setHotspot(x, y);
+                    setHotspot(v, x, y);
 
                     if (mTouchSlop == -1)
                         mTouchSlop = ViewConfiguration.get(v.getContext()).getScaledTouchSlop();
@@ -171,10 +171,19 @@ public class HotspotTouchHelper implements View.OnTouchListener {
         return false;
     }
 
+    private void setHotspot(View v, float x, float y) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            v.drawableHotspotChanged(x, y);
+        }
+        mOwner.setHotspot(x, y);
+    }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void setPressed(View v, boolean pressed, float x, float y){
         v.setPressed(pressed);
-        mOwner.setHotspot(x, y);
+        if (pressed) {
+            setHotspot(v, x, y);
+        }
     }
 
     /**
