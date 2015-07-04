@@ -23,9 +23,12 @@ import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewConfiguration;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class HotspotTouchHelper implements View.OnTouchListener {
 
-    private final Hotspotable mOwner;
+    private final List<Hotspotable> mOwners = new ArrayList<>();
 
     private boolean mPrePressed = false;
     private boolean mHasPerformedLongPress = false;
@@ -40,8 +43,34 @@ public class HotspotTouchHelper implements View.OnTouchListener {
      */
     private int mTouchSlop = -1;
 
-    public HotspotTouchHelper(Hotspotable owner){
-        mOwner = owner;
+    public HotspotTouchHelper(Hotspotable owner) {
+        mOwners.add(owner);
+    }
+
+    public void addOwner(Hotspotable owner){
+        mOwners.add(owner);
+    }
+
+    public void removeOwner(Hotspotable owner){
+        mOwners.remove(owner);
+    }
+
+    public void cleanOwner() {
+        mOwners.clear();
+    }
+
+    public static void setHotspotTouchHelper(View view, HotspotTouchHelper helper) {
+        view.setTag(R.id.view_tag_hotspot_touch_helper, helper);
+        view.setOnTouchListener(helper);
+    }
+
+    public static HotspotTouchHelper getHotspotTouchHelper(View view) {
+        Object obj = view.getTag(R.id.view_tag_hotspot_touch_helper);
+        if (obj instanceof HotspotTouchHelper) {
+            return (HotspotTouchHelper) obj;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -175,7 +204,9 @@ public class HotspotTouchHelper implements View.OnTouchListener {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             v.drawableHotspotChanged(x, y);
         }
-        mOwner.setHotspot(x, y);
+        for (Hotspotable owner : mOwners) {
+            owner.setHotspot(x, y);
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
