@@ -55,12 +55,11 @@ public class Hotspot {
         }
     }
 
-    @SuppressWarnings("RedundantCast")
-    public static void setHotspot(Drawable drawable, float x, float y) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            drawable.setHotspot(x, y);
-        } else if (drawable instanceof Hotspotable) {
-            ((Hotspotable) drawable).setHotspot(x, y);
+    public static void setHotspot(Object obj, float x, float y) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && obj instanceof Drawable) {
+            ((Drawable) obj).setHotspot(x, y);
+        } else if (obj instanceof Hotspotable) {
+            ((Hotspotable) obj).setHotspot(x, y);
         }
     }
 }
